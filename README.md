@@ -1,6 +1,6 @@
 # jQuery.selectableItemSequence
 
-items
+handles select/deselect action about items with events.
 
 ## Demos
 

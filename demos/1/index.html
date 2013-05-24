@@ -8,14 +8,276 @@
 <style>
 body {
   margin:0;
-  padding:15px;
+  padding:15px 15px 100px;
 }
+hr {
+	margin:40px 0;
+}
+.sequence {
+	overflow:hidden;
+	padding:1px;
+	*zoom:1; /* ie */
+	-webkit-user-select:none;
+	-moz-user-select:none;
+	user-select:none;
+}
+	.item {
+		width:60px;
+		line-height:60px;
+		text-align:center;
+		border:5px solid #666;
+		color:#666;
+		float:left;
+		margin:0 10px 0 0;
+		cursor:pointer;
+	}
+	.activeItem {
+		border-color:red;
+		color:red;
+	}
+
+.debugTools {
+	border:1px solid #000;
+	padding:10px 10px 2px;
+	margin:10px 0 0;
+}
+	.debugTools > div{
+		padding:0 0 8px;
+	}
 </style>
-<script>
-</script>
 </head>
 <body>
 <h1>$.fn.selectableItemSequence</h1>
-<p>foobar</p>
+
+<hr>
+
+<h2>standard</h2>
+
+<p>handles active state with events.</p>
+
+<div class="sequence" id="seq1">
+	<div class="item">A</div>
+	<div class="item">B</div>
+	<div class="item">C</div>
+	<div class="item">D</div>
+	<div class="item">E</div>
+	<div class="item">F</div>
+	<div class="item">G</div>
+	<div class="item">H</div>
+</div>
+
+<div class="debugTools">
+	<div>
+		<button id="seq1-toPrev" disabled>selectPrev</button>
+		<button id="seq1-toNext" disabled>selectNext</button>
+	</div>
+	<div>selected index: <span id="seq1-selectedIndex">-</span></div>
+</div>
+
+<script>
+$(function() {
+	$('#seq1').each(function() {
+
+		var $el = $(this);
+		var $selectedIndex = $('#seq1-selectedIndex');
+		var $toPrev = $('#seq1-toPrev');
+		var $toNext = $('#seq1-toNext');
+
+		$el.selectableItemSequence({
+			selector_item: '.item',
+			class_activeItem: 'activeItem'
+		});
+
+		var instance = $el.data('selectableitemsequence');
+
+		instance.on('select', function(data) {
+			$selectedIndex.text(data.index);
+			if(data.isFirstItem) {
+				$toPrev.prop('disabled', true);
+			} else {
+				$toPrev.prop('disabled', false);
+			}
+			if(data.isLastItem) {
+				$toNext.prop('disabled', true);
+			} else {
+				$toNext.prop('disabled', false);
+			}
+		});
+
+		$toPrev.click(function() {
+			instance.selectPrev();
+		});
+		$toNext.click(function() {
+			instance.selectNext();
+		});
+
+	});
+});
+</script>
+
+<hr>
+
+<h2>deselectOnActiveItemClick: true</h2>
+
+<p>When active item was clicked, it will be deselected.</p>
+
+<div class="sequence" id="seq2">
+	<div class="item">A</div>
+	<div class="item">B</div>
+	<div class="item">C</div>
+	<div class="item">D</div>
+	<div class="item">E</div>
+	<div class="item">F</div>
+	<div class="item">G</div>
+	<div class="item">H</div>
+</div>
+
+<div class="debugTools">
+	<div>
+		<button id="seq2-toPrev" disabled>selectPrev</button>
+		<button id="seq2-toNext" disabled>selectNext</button>
+		<button id="seq2-deselectAll" disabled>deselectAll</button>
+	</div>
+	<div>selected index: <span id="seq2-selectedIndex">-</span></div>
+</div>
+
+<script>
+$(function() {
+	$('#seq2').each(function() {
+
+		var $el = $(this);
+		var $selectedIndex = $('#seq2-selectedIndex');
+		var $toPrev = $('#seq2-toPrev');
+		var $toNext = $('#seq2-toNext');
+		var $deselectAll = $('#seq2-deselectAll');
+
+		$el.selectableItemSequence({
+			selector_item: '.item',
+			class_activeItem: 'activeItem',
+			deselectOnActiveItemClick: true
+		});
+
+		var instance = $el.data('selectableitemsequence');
+
+		instance.on('select', function(data) {
+			$deselectAll.prop('disabled', false);
+			$selectedIndex.text(data.index);
+			if(data.isFirstItem) {
+				$toPrev.prop('disabled', true);
+			} else {
+				$toPrev.prop('disabled', false);
+			}
+			if(data.isLastItem) {
+				$toNext.prop('disabled', true);
+			} else {
+				$toNext.prop('disabled', false);
+			}
+		});
+		instance.on('allitemdeselected', function() {
+			$selectedIndex.text('-');
+			$toPrev.prop('disabled', true);
+			$toNext.prop('disabled', true);
+			$deselectAll.prop('disabled', true);
+		});
+
+		$toPrev.click(function() {
+			instance.selectPrev();
+		});
+		$toNext.click(function() {
+			instance.selectNext();
+		});
+		$deselectAll.click(function() {
+			instance.deselectAll();
+		});
+
+	});
+});
+</script>
+
+<hr>
+
+<h2>do something on select/deselect</h2>
+
+<p>deselect event. This example does fadeTo on select/deselect.</p>
+
+<div class="sequence" id="seq3">
+	<div class="item">A</div>
+	<div class="item">B</div>
+	<div class="item">C</div>
+	<div class="item">D</div>
+	<div class="item">E</div>
+	<div class="item">F</div>
+	<div class="item">G</div>
+	<div class="item">H</div>
+</div>
+
+<div class="debugTools">
+	<div>
+		<button id="seq3-toPrev" disabled>selectPrev</button>
+		<button id="seq3-toNext" disabled>selectNext</button>
+		<button id="seq3-deselectAll" disabled>deselectAll</button>
+	</div>
+	<div>selected index: <span id="seq3-selectedIndex">-</span></div>
+</div>
+
+<script>
+$(function() {
+	$('#seq3').each(function() {
+
+		var $el = $(this);
+		var $selectedIndex = $('#seq3-selectedIndex');
+		var $toPrev = $('#seq3-toPrev');
+		var $toNext = $('#seq3-toNext');
+		var $deselectAll = $('#seq3-deselectAll');
+
+		$el.selectableItemSequence({
+			selector_item: '.item',
+			class_activeItem: 'activeItem',
+			deselectOnActiveItemClick: true
+		});
+
+		$el.find('.item').css('opacity', 0.3);
+
+		var instance = $el.data('selectableitemsequence');
+
+		instance.on('select', function(data) {
+			$deselectAll.prop('disabled', false);
+			$selectedIndex.text(data.index);
+			data.el.fadeTo(400, 1);
+			if(data.isFirstItem) {
+				$toPrev.prop('disabled', true);
+			} else {
+				$toPrev.prop('disabled', false);
+			}
+			if(data.isLastItem) {
+				$toNext.prop('disabled', true);
+			} else {
+				$toNext.prop('disabled', false);
+			}
+		});
+		instance.on('deselect', function(data) {
+			data.el.fadeTo(400, 0.3);
+		});
+		instance.on('allitemdeselected', function() {
+			$selectedIndex.text('-');
+			$toPrev.prop('disabled', true);
+			$toNext.prop('disabled', true);
+			$deselectAll.prop('disabled', true);
+		});
+
+		$toPrev.click(function() {
+			instance.selectPrev();
+		});
+		$toNext.click(function() {
+			instance.selectNext();
+		});
+		$deselectAll.click(function() {
+			instance.deselectAll();
+		});
+
+	});
+});
+</script>
+
 </body>
 </html>
