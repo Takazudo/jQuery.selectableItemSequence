@@ -3,8 +3,6 @@
 <head>
 <meta charset="utf-8">
 <title></title>
-<script src="../../libs/jquery/1.7.0/jquery.js"></script>
-<script src="../../jquery.selectableitemseq.js"></script>
 <style>
 body {
   margin:0;
@@ -45,15 +43,23 @@ hr {
 		padding:0 0 8px;
 	}
 </style>
+<script src="../../libs/jquery/1.7.0/jquery.js"></script>
+<script src="../../jquery.selectableitemseq.js"></script>
+<script>
+if(!window.console) {
+	window.console = {}
+	window.console.log = $.noop;
+}
+</script>
 </head>
 <body>
-<h1>$.fn.selectableItemSequence</h1>
+<h1><a href="https://github.com/Takazudo/jQuery.selectableItemSequence">$.fn.selectableItemSequence</a></h1>
 
 <hr>
 
 <h2>standard</h2>
 
-<p>handles active state with events.</p>
+<p>handles active state with events. It's like radio button as default.</p>
 
 <div class="sequence" id="seq1">
 	<div class="item">A</div>
@@ -278,6 +284,219 @@ $(function() {
 	});
 });
 </script>
+
+<hr>
+
+<h2>multiSelect: true</h2>
+
+<p>allows multiselect.</p>
+
+<div class="sequence" id="seq4">
+	<div class="item">A</div>
+	<div class="item">B</div>
+	<div class="item">C</div>
+	<div class="item">D</div>
+	<div class="item">E</div>
+	<div class="item">F</div>
+	<div class="item">G</div>
+	<div class="item">H</div>
+</div>
+
+<div class="debugTools">
+	<div>
+		<button id="seq4-deselectAll" disabled>deselectAll</button>
+		<button id="seq4-logSelected">log selected</button>
+	</div>
+	<div>selected index: <span id="seq4-selectedIndex">-</span></div>
+</div>
+
+<script>
+$(function() {
+	$('#seq4').each(function() {
+
+		var $el = $(this);
+		var $selectedIndex = $('#seq4-selectedIndex');
+		var $deselectAll = $('#seq4-deselectAll');
+		var $logSelected = $('#seq4-logSelected');
+
+		$el.selectableItemSequence({
+			selector_item: '.item',
+			class_activeItem: 'activeItem',
+			deselectOnActiveItemClick: true,
+			multiSelect: true
+		});
+
+		$el.find('.item').css('opacity', 0.3);
+
+		var instance = $el.data('selectableitemsequence');
+
+		instance.on('select', function(data) {
+			$deselectAll.prop('disabled', false);
+			$selectedIndex.text(data.index);
+			data.el.fadeTo(400, 1);
+		});
+		instance.on('deselect', function(data) {
+			data.el.fadeTo(400, 0.3);
+		});
+		instance.on('allitemdeselected', function() {
+			$selectedIndex.text('-');
+			$deselectAll.prop('disabled', true);
+		});
+
+		$deselectAll.click(function() {
+			instance.deselectAll();
+		});
+		$logSelected.click(function() {
+			var $items = instance.getSelectedElements();
+			console.log($items);
+			alert('see your console');
+		});
+
+	});
+});
+</script>
+
+<hr>
+
+<h2>instance.selectByIndex(2)</h2>
+
+<p>select by index.</p>
+
+<div class="sequence" id="seq5">
+	<div class="item">A</div>
+	<div class="item">B</div>
+	<div class="item">C</div>
+	<div class="item">D</div>
+	<div class="item">E</div>
+	<div class="item">F</div>
+	<div class="item">G</div>
+	<div class="item">H</div>
+</div>
+
+<div class="debugTools">
+	<div>
+		<button id="seq5-toPrev" disabled>selectPrev</button>
+		<button id="seq5-toNext" disabled>selectNext</button>
+	</div>
+	<div>selected index: <span id="seq5-selectedIndex">-</span></div>
+</div>
+
+<script>
+$(function() {
+	$('#seq5').each(function() {
+
+		var $el = $(this);
+		var $selectedIndex = $('#seq5-selectedIndex');
+		var $toPrev = $('#seq5-toPrev');
+		var $toNext = $('#seq5-toNext');
+
+		$el.selectableItemSequence({
+			selector_item: '.item',
+			class_activeItem: 'activeItem'
+		});
+
+		var instance = $el.data('selectableitemsequence');
+
+		instance.on('select', function(data) {
+			$selectedIndex.text(data.index);
+			if(data.isFirstItem) {
+				$toPrev.prop('disabled', true);
+			} else {
+				$toPrev.prop('disabled', false);
+			}
+			if(data.isLastItem) {
+				$toNext.prop('disabled', true);
+			} else {
+				$toNext.prop('disabled', false);
+			}
+		});
+
+		instance.selectByIndex(2);
+
+		$toPrev.click(function() {
+			instance.selectPrev();
+		});
+		$toNext.click(function() {
+			instance.selectNext();
+		});
+
+	});
+});
+</script>
+
+<hr>
+
+<h2>multiSelect: true / instance.selectByIndexes([2,5])</h2>
+
+<p>select by indexes.</p>
+
+<div class="sequence" id="seq6">
+	<div class="item">A</div>
+	<div class="item">B</div>
+	<div class="item">C</div>
+	<div class="item">D</div>
+	<div class="item">E</div>
+	<div class="item">F</div>
+	<div class="item">G</div>
+	<div class="item">H</div>
+</div>
+
+<div class="debugTools">
+	<div>
+		<button id="seq6-deselectAll" disabled>deselectAll</button>
+		<button id="seq6-logSelected">log selected</button>
+	</div>
+	<div>selected index: <span id="seq6-selectedIndex">-</span></div>
+</div>
+
+<script>
+$(function() {
+	$('#seq6').each(function() {
+
+		var $el = $(this);
+		var $selectedIndex = $('#seq6-selectedIndex');
+		var $deselectAll = $('#seq6-deselectAll');
+		var $logSelected = $('#seq6-logSelected');
+
+		$el.selectableItemSequence({
+			selector_item: '.item',
+			class_activeItem: 'activeItem',
+			deselectOnActiveItemClick: true,
+			multiSelect: true
+		});
+
+		$el.find('.item').css('opacity', 0.3);
+
+		var instance = $el.data('selectableitemsequence');
+
+		instance.on('select', function(data) {
+			$deselectAll.prop('disabled', false);
+			$selectedIndex.text(data.index);
+			data.el.fadeTo(400, 1);
+		});
+		instance.on('deselect', function(data) {
+			data.el.fadeTo(400, 0.3);
+		});
+		instance.on('allitemdeselected', function() {
+			$selectedIndex.text('-');
+			$deselectAll.prop('disabled', true);
+		});
+
+		instance.selectByIndexes([2,5]);
+
+		$deselectAll.click(function() {
+			instance.deselectAll();
+		});
+		$logSelected.click(function() {
+			var $items = instance.getSelectedElements();
+			console.log($items);
+			alert('see your console');
+		});
+
+	});
+});
+</script>
+
 
 </body>
 </html>

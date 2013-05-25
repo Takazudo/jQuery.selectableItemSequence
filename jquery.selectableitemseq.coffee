@@ -106,15 +106,19 @@ do ($=jQuery, window=window, document=document) ->
       class_activeItem: null
       eventPrefix: 'selectableitemsequence.'
       deselectOnActiveItemClick: false
+      multiSelect: false
 
     constructor: (@$el, options) ->
 
       @options = $.extend {}, ns.Sequence.defaults, options
+      if @options.multiSelect
+        @options.deselectOnActiveItemClick = true
+
       @_createItemInstances()
       @_eventifyItems()
 
     # internal
-
+    
     _createItemInstances: ->
 
       @_items = []
@@ -168,7 +172,9 @@ do ($=jQuery, window=window, document=document) ->
 
       return this if item.active
       
-      @deselectItemWithout item
+      unless @options.multiSelect
+        @deselectItemWithout item
+
       item.select()
       data =
         el: item.$el
@@ -193,11 +199,26 @@ do ($=jQuery, window=window, document=document) ->
         @triggerEvent 'allitemdeselected'
       return this
 
+    selectByIndex: (index) ->
+
+      item = @findItemWhoseIndexIs index
+      return this if item is null
+      @select item
+      return this
+      
+    selectByIndexes: (indexes) ->
+
+      for index in indexes
+        @selectByIndex index
+      return this
+      
+
     deselectAll: ->
 
-      item = @findActiveItem()
-      return this if item is null
-      @deselect item
+      items = @findActiveItems()
+      return this if items.length is 0
+      for item in items
+        @deselect item
       return this
 
     deselectItemWithout: (item) ->
@@ -210,12 +231,20 @@ do ($=jQuery, window=window, document=document) ->
 
     # find methods
 
-    findActiveItem: ->
-      
+    findItemWhoseIndexIs: (index) ->
+
       for item in @_items
-        if item.active
+        if item.options.index is index
           return item
       return null
+
+    findActiveItems: ->
+      
+      res = []
+      for item in @_items
+        if item.active
+          res.push item
+      return res
 
     findNextOf: (item) ->
       
@@ -242,10 +271,10 @@ do ($=jQuery, window=window, document=document) ->
 
     selectNext: ->
 
-      item = @findActiveItem()
-      if item is null
+      items = @findActiveItems()
+      if items.length is 0
         return this
-      target = @findNextOf item
+      target = @findNextOf items[0]
       if target is null
         return this
       @select target
@@ -253,14 +282,27 @@ do ($=jQuery, window=window, document=document) ->
 
     selectPrev: ->
       
-      item = @findActiveItem()
-      if item is null
+      items = @findActiveItems()
+      if items.length is 0
         return this
-      target = @findPrevOf item
+      target = @findPrevOf items[0]
       if target is null
         return this
       @select target
       return this
+
+    # misc
+    
+    getSelectedElements: ->
+      # returns selected elements as jQuery object
+
+      $selected = $()
+      items = @findActiveItems()
+      if items.length isnt 0
+        for item in items
+          $selected = $selected.add item.$el
+      return $selected
+      
 
   # ============================================================
   # bridge

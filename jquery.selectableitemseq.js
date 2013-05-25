@@ -150,12 +150,16 @@
         selector_item: null,
         class_activeItem: null,
         eventPrefix: 'selectableitemsequence.',
-        deselectOnActiveItemClick: false
+        deselectOnActiveItemClick: false,
+        multiSelect: false
       };
 
       function Sequence($el, options) {
         this.$el = $el;
         this.options = $.extend({}, ns.Sequence.defaults, options);
+        if (this.options.multiSelect) {
+          this.options.deselectOnActiveItemClick = true;
+        }
         this._createItemInstances();
         this._eventifyItems();
       }
@@ -230,7 +234,9 @@
         if (item.active) {
           return this;
         }
-        this.deselectItemWithout(item);
+        if (!this.options.multiSelect) {
+          this.deselectItemWithout(item);
+        }
         item.select();
         data = {
           el: item.$el,
@@ -261,13 +267,35 @@
         return this;
       };
 
-      Sequence.prototype.deselectAll = function() {
+      Sequence.prototype.selectByIndex = function(index) {
         var item;
-        item = this.findActiveItem();
+        item = this.findItemWhoseIndexIs(index);
         if (item === null) {
           return this;
         }
-        this.deselect(item);
+        this.select(item);
+        return this;
+      };
+
+      Sequence.prototype.selectByIndexes = function(indexes) {
+        var index, _i, _len;
+        for (_i = 0, _len = indexes.length; _i < _len; _i++) {
+          index = indexes[_i];
+          this.selectByIndex(index);
+        }
+        return this;
+      };
+
+      Sequence.prototype.deselectAll = function() {
+        var item, items, _i, _len;
+        items = this.findActiveItems();
+        if (items.length === 0) {
+          return this;
+        }
+        for (_i = 0, _len = items.length; _i < _len; _i++) {
+          item = items[_i];
+          this.deselect(item);
+        }
         return this;
       };
 
@@ -283,16 +311,29 @@
         return this;
       };
 
-      Sequence.prototype.findActiveItem = function() {
+      Sequence.prototype.findItemWhoseIndexIs = function(index) {
         var item, _i, _len, _ref;
         _ref = this._items;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           item = _ref[_i];
-          if (item.active) {
+          if (item.options.index === index) {
             return item;
           }
         }
         return null;
+      };
+
+      Sequence.prototype.findActiveItems = function() {
+        var item, res, _i, _len, _ref;
+        res = [];
+        _ref = this._items;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          item = _ref[_i];
+          if (item.active) {
+            res.push(item);
+          }
+        }
+        return res;
       };
 
       Sequence.prototype.findNextOf = function(item) {
@@ -328,12 +369,12 @@
       };
 
       Sequence.prototype.selectNext = function() {
-        var item, target;
-        item = this.findActiveItem();
-        if (item === null) {
+        var items, target;
+        items = this.findActiveItems();
+        if (items.length === 0) {
           return this;
         }
-        target = this.findNextOf(item);
+        target = this.findNextOf(items[0]);
         if (target === null) {
           return this;
         }
@@ -342,17 +383,30 @@
       };
 
       Sequence.prototype.selectPrev = function() {
-        var item, target;
-        item = this.findActiveItem();
-        if (item === null) {
+        var items, target;
+        items = this.findActiveItems();
+        if (items.length === 0) {
           return this;
         }
-        target = this.findPrevOf(item);
+        target = this.findPrevOf(items[0]);
         if (target === null) {
           return this;
         }
         this.select(target);
         return this;
+      };
+
+      Sequence.prototype.getSelectedElements = function() {
+        var $selected, item, items, _i, _len;
+        $selected = $();
+        items = this.findActiveItems();
+        if (items.length !== 0) {
+          for (_i = 0, _len = items.length; _i < _len; _i++) {
+            item = items[_i];
+            $selected = $selected.add(item.$el);
+          }
+        }
+        return $selected;
       };
 
       return Sequence;
