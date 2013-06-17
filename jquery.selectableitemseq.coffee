@@ -13,59 +13,12 @@ do ($=jQuery, window=window, document=document) ->
     return ret.reverse()
 
   # ============================================================
-  # event module
-
-  class ns.Event
-
-    on: (ev, callback) ->
-      @_callbacks = {} unless @_callbacks?
-      evs = ev.split(' ')
-      for name in evs
-        @_callbacks[name] or= []
-        @_callbacks[name].push(callback)
-      return this
-
-    once: (ev, callback) ->
-      @on ev, ->
-        @off(ev, arguments.callee)
-        callback.apply(@, arguments)
-      return this
-
-    trigger: (args...) ->
-      ev = args.shift()
-      list = @_callbacks?[ev]
-      return unless list
-      for callback in list
-        if callback.apply(@, args) is false
-          break
-      return this
-
-    off: (ev, callback) ->
-      unless ev
-        @_callbacks = {}
-        return this
-
-      list = @_callbacks?[ev]
-      return this unless list
-
-      unless callback
-        delete @_callbacks[ev]
-        return this
-
-      for cb, i in list when cb is callback
-        list = list.slice()
-        list.splice(i, 1)
-        @_callbacks[ev] = list
-        break
-
-      return this
-
-  # ============================================================
   # SequenceItem
   
-  class ns.Item extends ns.Event
+  class ns.Item extends window.EveEve
 
     @defaults =
+      class_inactive: null
       class_active: null
       index: null
 
@@ -85,6 +38,8 @@ do ($=jQuery, window=window, document=document) ->
     select: (silent = false) ->
 
       return this if @active is true
+      if @options.class_inactive
+        @$el.removeClass @options.class_inactive
       @$el.addClass @options.class_active
       @active = true
       return this
@@ -93,17 +48,20 @@ do ($=jQuery, window=window, document=document) ->
 
       return this if @active is false
       @$el.removeClass @options.class_active
+      if @options.class_inactive
+        @$el.addClass @options.class_inactive
       @active = false
       return this
 
   # ============================================================
   # Sequence
   
-  class ns.Sequence extends ns.Event
+  class ns.Sequence extends window.EveEve
 
     @defaults =
       selector_item: null
       class_activeItem: null
+      class_inactiveItem: null
       eventPrefix: 'selectableitemsequence.'
       deselectOnActiveItemClick: false
       multiSelect: false
@@ -125,6 +83,7 @@ do ($=jQuery, window=window, document=document) ->
       (@$el.find @options.selector_item).each (i, itemEl) =>
         $item = $(itemEl)
         o =
+          class_inactive: @options.class_inactiveItem
           class_active: @options.class_activeItem
           index: i
         item = new ns.Item $item, o
@@ -212,7 +171,6 @@ do ($=jQuery, window=window, document=document) ->
         @selectByIndex index
       return this
       
-
     deselectAll: ->
 
       items = @findActiveItems()

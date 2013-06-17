@@ -12,11 +12,17 @@ see demos
 
 ## Depends
 
+* [EveEve](https://github.com/Takazudo/EveEve)
 * jQuery 1.9.1 (>=1.7.0)
 
 ## Browsers
 
 IE6+ and other new browsers.  
+
+## How to build
+
+git clone, then `git submodule init`, `git submodule update`.  
+Then, `grunt` to build or `grunt watch` to watch coffee file's change.
 
 ## License
 

@@ -1,11 +1,10 @@
 /*! jQuery.selectableItemSequence (https://github.com/Takazudo/jQuery.imgUtil)
- * lastupdate: 2013-05-25
+ * lastupdate: 2013-06-17
  * version: 0.0.0
  * author: 'Takazudo' Takeshi Takatsudo <takazudo@gmail.com>
  * License: MIT */
 (function() {
-  var __slice = [].slice,
-    __hasProp = {}.hasOwnProperty,
+  var __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   (function($, window, document) {
@@ -20,84 +19,12 @@
       }
       return ret.reverse();
     };
-    ns.Event = (function() {
-
-      function Event() {}
-
-      Event.prototype.on = function(ev, callback) {
-        var evs, name, _base, _i, _len;
-        if (this._callbacks == null) {
-          this._callbacks = {};
-        }
-        evs = ev.split(' ');
-        for (_i = 0, _len = evs.length; _i < _len; _i++) {
-          name = evs[_i];
-          (_base = this._callbacks)[name] || (_base[name] = []);
-          this._callbacks[name].push(callback);
-        }
-        return this;
-      };
-
-      Event.prototype.once = function(ev, callback) {
-        this.on(ev, function() {
-          this.off(ev, arguments.callee);
-          return callback.apply(this, arguments);
-        });
-        return this;
-      };
-
-      Event.prototype.trigger = function() {
-        var args, callback, ev, list, _i, _len, _ref;
-        args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-        ev = args.shift();
-        list = (_ref = this._callbacks) != null ? _ref[ev] : void 0;
-        if (!list) {
-          return;
-        }
-        for (_i = 0, _len = list.length; _i < _len; _i++) {
-          callback = list[_i];
-          if (callback.apply(this, args) === false) {
-            break;
-          }
-        }
-        return this;
-      };
-
-      Event.prototype.off = function(ev, callback) {
-        var cb, i, list, _i, _len, _ref;
-        if (!ev) {
-          this._callbacks = {};
-          return this;
-        }
-        list = (_ref = this._callbacks) != null ? _ref[ev] : void 0;
-        if (!list) {
-          return this;
-        }
-        if (!callback) {
-          delete this._callbacks[ev];
-          return this;
-        }
-        for (i = _i = 0, _len = list.length; _i < _len; i = ++_i) {
-          cb = list[i];
-          if (!(cb === callback)) {
-            continue;
-          }
-          list = list.slice();
-          list.splice(i, 1);
-          this._callbacks[ev] = list;
-          break;
-        }
-        return this;
-      };
-
-      return Event;
-
-    })();
     ns.Item = (function(_super) {
 
       __extends(Item, _super);
 
       Item.defaults = {
+        class_inactive: null,
         class_active: null,
         index: null
       };
@@ -125,6 +52,9 @@
         if (this.active === true) {
           return this;
         }
+        if (this.options.class_inactive) {
+          this.$el.removeClass(this.options.class_inactive);
+        }
         this.$el.addClass(this.options.class_active);
         this.active = true;
         return this;
@@ -135,13 +65,16 @@
           return this;
         }
         this.$el.removeClass(this.options.class_active);
+        if (this.options.class_inactive) {
+          this.$el.addClass(this.options.class_inactive);
+        }
         this.active = false;
         return this;
       };
 
       return Item;
 
-    })(ns.Event);
+    })(window.EveEve);
     ns.Sequence = (function(_super) {
 
       __extends(Sequence, _super);
@@ -149,6 +82,7 @@
       Sequence.defaults = {
         selector_item: null,
         class_activeItem: null,
+        class_inactiveItem: null,
         eventPrefix: 'selectableitemsequence.',
         deselectOnActiveItemClick: false,
         multiSelect: false
@@ -171,6 +105,7 @@
           var $item, item, o;
           $item = $(itemEl);
           o = {
+            class_inactive: _this.options.class_inactiveItem,
             class_active: _this.options.class_activeItem,
             index: i
           };
@@ -411,7 +346,7 @@
 
       return Sequence;
 
-    })(ns.Event);
+    })(window.EveEve);
     $.fn.selectableItemSequence = function(options) {
       return this.each(function(i, el) {
         var $el;

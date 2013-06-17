@@ -34,6 +34,9 @@ hr {
 		border-color:red;
 		color:red;
 	}
+	.inactiveItem {
+		border-color:#orange;
+	}
 
 .debugTools {
 	border:1px solid #000;
@@ -45,6 +48,7 @@ hr {
 	}
 </style>
 <script src="../../libs/jquery/1.7.0/jquery.js"></script>
+<script src="../../EveEve/eveeve.js"></script>
 <script src="../../jquery.selectableitemseq.js"></script>
 <script>
 if(!window.console) {
@@ -161,6 +165,7 @@ $(function() {
 		$el.selectableItemSequence({
 			selector_item: '.item',
 			class_activeItem: 'activeItem',
+			class_inactiveItem: 'inactiveItem',
 			deselectOnActiveItemClick: true
 		});
 
