@@ -34,6 +34,7 @@
         this.active = false;
         this.options = $.extend({}, ns.Item.defaults, options);
         this._eventify();
+        this._handleInitialStats();
       }
 
       Item.prototype._eventify = function() {
@@ -45,10 +46,14 @@
         return this;
       };
 
-      Item.prototype.select = function(silent) {
-        if (silent == null) {
-          silent = false;
+      Item.prototype._handleInitialStats = function() {
+        if (this.$el.hasClass(this.options.class_active)) {
+          this.active = true;
         }
+        return this;
+      };
+
+      Item.prototype.select = function() {
         if (this.active === true) {
           return this;
         }

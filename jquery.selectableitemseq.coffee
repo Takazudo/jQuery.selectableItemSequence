@@ -27,6 +27,7 @@ do ($=jQuery, window=window, document=document) ->
       @active = false
       @options = $.extend {}, ns.Item.defaults, options
       @_eventify()
+      @_handleInitialStats()
 
     _eventify: ->
 
@@ -35,7 +36,13 @@ do ($=jQuery, window=window, document=document) ->
         @trigger 'click'
       return this
 
-    select: (silent = false) ->
+    _handleInitialStats: ->
+
+      if @$el.hasClass @options.class_active
+        @active = true
+      return this
+
+    select: ->
 
       return this if @active is true
       if @options.class_inactive
@@ -135,11 +142,13 @@ do ($=jQuery, window=window, document=document) ->
         @deselectItemWithout item
 
       item.select()
+
       data =
         el: item.$el
         index: item.options.index
         isFirstItem: @isFirstItem item
         isLastItem: @isLastItem item
+
       @triggerEvent 'select', data
 
       return this
@@ -147,15 +156,20 @@ do ($=jQuery, window=window, document=document) ->
     deselect: (item) ->
       
       return this unless item.active
+
       item.deselect()
+
       data =
         el: item.$el
         index: item.options.index
         isFirstItem: @isFirstItem item
         isLastItem: @isLastItem item
+
       @triggerEvent 'deselect', data
+
       if @isAnyItemActive() is false
         @triggerEvent 'allitemdeselected'
+
       return this
 
     selectByIndex: (index) ->
@@ -248,6 +262,8 @@ do ($=jQuery, window=window, document=document) ->
         return this
       @select target
       return this
+
+    
 
     # misc
     

@@ -35,7 +35,7 @@ hr {
 		color:red;
 	}
 	.inactiveItem {
-		border-color:#orange;
+		border-color:orange;
 	}
 
 .debugTools {
@@ -67,7 +67,7 @@ if(!window.console) {
 <p>handles active state with events. It's like radio button as default.</p>
 
 <div class="sequence" id="seq1">
-	<a href="#" class="item">A</a>
+	<a href="#" class="item activeItem">A</a>
 	<a href="#" class="item">B</a>
 	<a href="#" class="item">C</a>
 	<a href="#" class="item">D</a>
@@ -133,14 +133,14 @@ $(function() {
 <p>When active item was clicked, it will be deselected.</p>
 
 <div class="sequence" id="seq2">
-	<a href="#" class="item">A</a>
-	<a href="#" class="item">B</a>
-	<a href="#" class="item">C</a>
-	<a href="#" class="item">D</a>
-	<a href="#" class="item">E</a>
-	<a href="#" class="item">F</a>
-	<a href="#" class="item">G</a>
-	<a href="#" class="item">H</a>
+	<a href="#" class="item inactiveItem">A</a>
+	<a href="#" class="item inactiveItem">B</a>
+	<a href="#" class="item inactiveItem">C</a>
+	<a href="#" class="item inactiveItem">D</a>
+	<a href="#" class="item inactiveItem">E</a>
+	<a href="#" class="item inactiveItem">F</a>
+	<a href="#" class="item inactiveItem">G</a>
+	<a href="#" class="item inactiveItem">H</a>
 </div>
 
 <div class="debugTools">
