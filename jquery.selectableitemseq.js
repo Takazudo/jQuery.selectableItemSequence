@@ -1,5 +1,5 @@
 /*! jQuery.selectableItemSequence (https://github.com/Takazudo/jQuery.imgUtil)
- * lastupdate: 2013-06-17
+ * lastupdate: 2013-07-02
  * version: 0.0.0
  * author: 'Takazudo' Takeshi Takatsudo <takazudo@gmail.com>
  * License: MIT */
@@ -95,6 +95,7 @@
 
       function Sequence($el, options) {
         this.$el = $el;
+        this.disabled = false;
         this.options = $.extend({}, ns.Sequence.defaults, options);
         if (this.options.multiSelect) {
           this.options.deselectOnActiveItemClick = true;
@@ -126,6 +127,9 @@
         _ref = this._items;
         _fn = function(i) {
           i.on('click', function() {
+            if (_this.disabled) {
+              return;
+            }
             if (_this.options.deselectOnActiveItemClick && i.active) {
               return _this.deselect(i);
             } else {
@@ -333,6 +337,16 @@
           return this;
         }
         this.select(target);
+        return this;
+      };
+
+      Sequence.prototype.disable = function() {
+        this.disabled = true;
+        return this;
+      };
+
+      Sequence.prototype.enable = function() {
+        this.disabled = false;
         return this;
       };
 

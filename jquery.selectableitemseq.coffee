@@ -75,6 +75,8 @@ do ($=jQuery, window=window, document=document) ->
 
     constructor: (@$el, options) ->
 
+      @disabled = false
+
       @options = $.extend {}, ns.Sequence.defaults, options
       if @options.multiSelect
         @options.deselectOnActiveItemClick = true
@@ -103,6 +105,8 @@ do ($=jQuery, window=window, document=document) ->
       for item in @_items
         do (i = item) =>
           i.on 'click', =>
+            if @disabled
+              return
             if @options.deselectOnActiveItemClick and i.active
               @deselect i
             else
@@ -263,7 +267,15 @@ do ($=jQuery, window=window, document=document) ->
       @select target
       return this
 
+    # disable/enable
     
+    disable: ->
+      @disabled = true
+      return this
+
+    enable: ->
+      @disabled = false
+      return this
 
     # misc
     

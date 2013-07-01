@@ -503,6 +503,59 @@ $(function() {
 });
 </script>
 
+<h2>disable / enable</h2>
+
+<p>select by indexes.</p>
+
+<div class="sequence" id="seq7">
+	<a href="#" class="item">A</a>
+	<a href="#" class="item">B</a>
+	<a href="#" class="item">C</a>
+	<a href="#" class="item">D</a>
+	<a href="#" class="item">E</a>
+	<a href="#" class="item">F</a>
+	<a href="#" class="item">G</a>
+	<a href="#" class="item">H</a>
+</div>
+
+<div class="debugTools">
+	<div>
+		<button id="seq7-disable">disable</button>
+		<button id="seq7-enable">enable</button>
+	</div>
+</div>
+
+<script>
+$(function() {
+	$('#seq7').each(function() {
+
+		var $el = $(this);
+		var $disable = $('#seq7-disable');
+		var $enable = $('#seq7-enable');
+		var $items = $el.find('.item');
+
+		$el.selectableItemSequence({
+			selector_item: '.item',
+			class_activeItem: 'activeItem',
+			deselectOnActiveItemClick: true,
+			multiSelect: true
+		});
+
+		var instance = $el.data('selectableitemsequence');
+
+		$disable.click(function() {
+			$items.css('opacity', 0.3);
+			instance.disable();
+		});
+		$enable.click(function() {
+			$items.css('opacity', 1);
+			instance.enable();
+		});
+
+	});
+});
+</script>
+
 
 </body>
 </html>
