@@ -1,5 +1,5 @@
 /*! jQuery.selectableItemSequence (https://github.com/Takazudo/jQuery.imgUtil)
- * lastupdate: 2013-07-02
+ * lastupdate: 2013-07-05
  * version: 0.0.0
  * author: 'Takazudo' Takeshi Takatsudo <takazudo@gmail.com>
  * License: MIT */
@@ -338,6 +338,36 @@
         }
         this.select(target);
         return this;
+      };
+
+      Sequence.prototype.selectUpTo = function(upTo) {
+        var i, maxIndex, sholdIEnd,
+          _this = this;
+        if (upTo < 1) {
+          return this;
+        }
+        maxIndex = this._items.length - 1;
+        sholdIEnd = function() {
+          var selectedCount;
+          selectedCount = _this.countSelected();
+          if (selectedCount >= upTo) {
+            return true;
+          }
+          return false;
+        };
+        i = 0;
+        while (i <= maxIndex) {
+          if (sholdIEnd()) {
+            return this;
+          }
+          this.selectByIndex(i);
+          i += 1;
+        }
+        return this;
+      };
+
+      Sequence.prototype.countSelected = function() {
+        return this.getSelectedElements().length;
       };
 
       Sequence.prototype.disable = function() {

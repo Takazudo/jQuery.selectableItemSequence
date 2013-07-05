@@ -556,6 +556,57 @@ $(function() {
 });
 </script>
 
+<h2>selectUpTo</h2>
+
+<p>select up to X.</p>
+
+<div class="sequence" id="seq8">
+	<a href="#" class="item">A</a>
+	<a href="#" class="item">B</a>
+	<a href="#" class="item">C</a>
+	<a href="#" class="item">D</a>
+	<a href="#" class="item">E</a>
+	<a href="#" class="item">F</a>
+	<a href="#" class="item">G</a>
+	<a href="#" class="item">H</a>
+</div>
+
+<div class="debugTools">
+	<div>
+		<button id="seq8-select">selectUpTo(4)</button>
+		<button id="seq8-count">alert(countSelected())</button>
+	</div>
+</div>
+
+<script>
+$(function() {
+	$('#seq8').each(function() {
+
+		var $el = $(this);
+		var $select = $('#seq8-select');
+		var $count = $('#seq8-count');
+		var $items = $el.find('.item');
+
+		$el.selectableItemSequence({
+			selector_item: '.item',
+			class_activeItem: 'activeItem',
+			deselectOnActiveItemClick: true,
+			multiSelect: true
+		});
+
+		var instance = $el.data('selectableitemsequence');
+
+		$select.click(function() {
+			instance.selectUpTo(4);
+		});
+		$count.click(function() {
+			alert(instance.countSelected());
+		});
+
+	});
+});
+</script>
+
 
 </body>
 </html>

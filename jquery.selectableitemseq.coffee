@@ -267,6 +267,30 @@ do ($=jQuery, window=window, document=document) ->
       @select target
       return this
 
+    selectUpTo: (upTo) ->
+
+      return this if upTo < 1
+
+      maxIndex = @_items.length - 1
+
+      sholdIEnd = =>
+        selectedCount = @countSelected()
+        if selectedCount >= upTo
+          return true
+        return false
+
+      i = 0
+      while i <= maxIndex
+        if sholdIEnd()
+          return this
+        @selectByIndex i
+        i += 1
+
+      return this
+
+    countSelected: ->
+      return @getSelectedElements().length
+
     # disable/enable
     
     disable: ->
