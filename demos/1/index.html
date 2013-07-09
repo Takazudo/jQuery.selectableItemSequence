@@ -608,5 +608,54 @@ $(function() {
 </script>
 
 
+<h2>max: 3</h2>
+
+<p>don't allow to select over max value.</p>
+
+<div class="sequence" id="seq9">
+	<a href="#" class="item">A</a>
+	<a href="#" class="item">B</a>
+	<a href="#" class="item">C</a>
+	<a href="#" class="item">D</a>
+	<a href="#" class="item">E</a>
+	<a href="#" class="item">F</a>
+	<a href="#" class="item">G</a>
+	<a href="#" class="item">H</a>
+</div>
+
+<script>
+$(function() {
+	$('#seq9').each(function() {
+
+		var $el = $(this);
+
+		$el.selectableItemSequence({
+			selector_item: '.item',
+			class_activeItem: 'activeItem',
+			deselectOnActiveItemClick: true,
+			multiSelect: true,
+			max: 3
+		});
+
+		var instance = $el.data('selectableitemsequence');
+		var inactiveItems;
+
+		instance.on('maxselect', function() {
+			inactiveItems = instance.findInactiveItems();
+			$.each(inactiveItems, function(i, item) {
+				item.$el.css('opacity', 0.3);
+			});
+		});
+		instance.on('maxselectrelease', function() {
+			$.each(inactiveItems, function(i, item) {
+				item.$el.css('opacity', 1);
+			});
+		});
+
+	});
+});
+</script>
+
+
 </body>
 </html>

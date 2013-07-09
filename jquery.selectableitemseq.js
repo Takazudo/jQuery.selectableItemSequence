@@ -1,5 +1,5 @@
 /*! jQuery.selectableItemSequence (https://github.com/Takazudo/jQuery.imgUtil)
- * lastupdate: 2013-07-05
+ * lastupdate: 2013-07-09
  * version: 0.0.0
  * author: 'Takazudo' Takeshi Takatsudo <takazudo@gmail.com>
  * License: MIT */
@@ -90,7 +90,8 @@
         class_inactiveItem: null,
         eventPrefix: 'selectableitemsequence.',
         deselectOnActiveItemClick: false,
-        multiSelect: false
+        multiSelect: false,
+        max: null
       };
 
       function Sequence($el, options) {
@@ -133,6 +134,9 @@
             if (_this.options.deselectOnActiveItemClick && i.active) {
               return _this.deselect(i);
             } else {
+              if (_this.options.max && _this.countSelected() === _this.options.max) {
+                return;
+              }
               return _this.select(i);
             }
           });
@@ -189,6 +193,12 @@
           isLastItem: this.isLastItem(item)
         };
         this.triggerEvent('select', data);
+        if (this.options.max) {
+          if (this.countSelected() === this.options.max) {
+            this._reachedMax = true;
+            this.triggerEvent('maxselect');
+          }
+        }
         return this;
       };
 
@@ -207,6 +217,12 @@
         this.triggerEvent('deselect', data);
         if (this.isAnyItemActive() === false) {
           this.triggerEvent('allitemdeselected');
+        }
+        if (this.options.max) {
+          if (this._reachedMax === true) {
+            this._reachedMax = false;
+            this.triggerEvent('maxselectrelease');
+          }
         }
         return this;
       };
@@ -274,6 +290,19 @@
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           item = _ref[_i];
           if (item.active) {
+            res.push(item);
+          }
+        }
+        return res;
+      };
+
+      Sequence.prototype.findInactiveItems = function() {
+        var item, res, _i, _len, _ref;
+        res = [];
+        _ref = this._items;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          item = _ref[_i];
+          if (!item.active) {
             res.push(item);
           }
         }
@@ -351,6 +380,9 @@
           var selectedCount;
           selectedCount = _this.countSelected();
           if (selectedCount >= upTo) {
+            return true;
+          }
+          if (_this.options.max && _this.options.max === selectedCount) {
             return true;
           }
           return false;

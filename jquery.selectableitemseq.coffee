@@ -72,6 +72,7 @@ do ($=jQuery, window=window, document=document) ->
       eventPrefix: 'selectableitemsequence.'
       deselectOnActiveItemClick: false
       multiSelect: false
+      max: null
 
     constructor: (@$el, options) ->
 
@@ -110,6 +111,8 @@ do ($=jQuery, window=window, document=document) ->
             if @options.deselectOnActiveItemClick and i.active
               @deselect i
             else
+              if @options.max and @countSelected() is @options.max
+                return
               @select i
           return
 
@@ -155,6 +158,11 @@ do ($=jQuery, window=window, document=document) ->
 
       @triggerEvent 'select', data
 
+      if @options.max
+        if @countSelected() is @options.max
+          @_reachedMax = true
+          @triggerEvent 'maxselect'
+
       return this
 
     deselect: (item) ->
@@ -173,6 +181,11 @@ do ($=jQuery, window=window, document=document) ->
 
       if @isAnyItemActive() is false
         @triggerEvent 'allitemdeselected'
+
+      if @options.max
+        if @_reachedMax is true
+          @_reachedMax = false
+          @triggerEvent 'maxselectrelease'
 
       return this
 
@@ -219,6 +232,14 @@ do ($=jQuery, window=window, document=document) ->
       res = []
       for item in @_items
         if item.active
+          res.push item
+      return res
+
+    findInactiveItems: ->
+      
+      res = []
+      for item in @_items
+        unless item.active
           res.push item
       return res
 
@@ -276,6 +297,8 @@ do ($=jQuery, window=window, document=document) ->
       sholdIEnd = =>
         selectedCount = @countSelected()
         if selectedCount >= upTo
+          return true
+        if @options.max and @options.max is selectedCount
           return true
         return false
 
