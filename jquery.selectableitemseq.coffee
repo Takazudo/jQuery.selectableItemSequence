@@ -21,6 +21,7 @@ do ($=jQuery, window=window, document=document) ->
       class_inactive: null
       class_active: null
       index: null
+      preventDefault: null
 
     constructor: (@$el, options) ->
 
@@ -32,7 +33,7 @@ do ($=jQuery, window=window, document=document) ->
     _eventify: ->
 
       @$el.bind 'click', (e) =>
-        e.preventDefault()
+        e.preventDefault() if @options.preventDefault
         @trigger 'click'
       return this
 
@@ -73,6 +74,7 @@ do ($=jQuery, window=window, document=document) ->
       deselectOnActiveItemClick: false
       multiSelect: false
       max: null
+      preventDefault: true
 
     constructor: (@$el, options) ->
 
@@ -96,6 +98,7 @@ do ($=jQuery, window=window, document=document) ->
           class_inactive: @options.class_inactiveItem
           class_active: @options.class_activeItem
           index: i
+          preventDefault: @options.preventDefault
         item = new ns.Item $item, o
         @_items.push item
 

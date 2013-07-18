@@ -1,5 +1,5 @@
 /*! jQuery.selectableItemSequence (https://github.com/Takazudo/jQuery.imgUtil)
- * lastupdate: 2013-07-09
+ * lastupdate: 2013-07-18
  * version: 0.0.0
  * author: 'Takazudo' Takeshi Takatsudo <takazudo@gmail.com>
  * License: MIT */
@@ -26,7 +26,8 @@
       Item.defaults = {
         class_inactive: null,
         class_active: null,
-        index: null
+        index: null,
+        preventDefault: null
       };
 
       function Item($el, options) {
@@ -40,7 +41,9 @@
       Item.prototype._eventify = function() {
         var _this = this;
         this.$el.bind('click', function(e) {
-          e.preventDefault();
+          if (_this.options.preventDefault) {
+            e.preventDefault();
+          }
           return _this.trigger('click');
         });
         return this;
@@ -91,7 +94,8 @@
         eventPrefix: 'selectableitemsequence.',
         deselectOnActiveItemClick: false,
         multiSelect: false,
-        max: null
+        max: null,
+        preventDefault: true
       };
 
       function Sequence($el, options) {
@@ -114,7 +118,8 @@
           o = {
             class_inactive: _this.options.class_inactiveItem,
             class_active: _this.options.class_activeItem,
-            index: i
+            index: i,
+            preventDefault: _this.options.preventDefault
           };
           item = new ns.Item($item, o);
           return _this._items.push(item);
